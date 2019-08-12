@@ -34,6 +34,9 @@ RUN mkdir -p /usr/local/src \
 WORKDIR /src
 
 EXPOSE 1313
+
+ENTRYPOINT ["/usr/local/bin/hugo"]
+CMD [ "--help" ]
 `
 
 const gitURL = "https://github.com/gohugoio/hugo.git"
