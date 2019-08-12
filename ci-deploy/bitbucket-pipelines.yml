@@ -1,0 +1,16 @@
+image: chilic/docker-hugo:latest
+
+pipelines:
+  default:
+    - step:
+        name: Build and minify files
+        script:
+          - git submodule update --init
+          - hugo  --minify --cleanDestinationDir
+        artifacts:
+          - public/**
+    - step:
+        name: Deploy with rsync to remote server
+        deployment: production
+        script:
+          - rsync -avz --delete -e "ssh -p $SSH_PORT" public/ "$SSH_HOSTDEST" --checksum
