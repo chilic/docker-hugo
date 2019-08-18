@@ -1,1 +1,3 @@
-# docker-hugo
+# Hugo Docker Image
+
+
