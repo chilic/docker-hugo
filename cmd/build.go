@@ -126,6 +126,5 @@ func main() {
 
 	// Write new docker file.
 	ioutil.WriteFile("Dockerfile", t.Bytes(), 0644)
-
 	commitLocal(ver)
 }
