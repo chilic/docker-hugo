@@ -1,0 +1,8 @@
+.git
+.gitignore
+
+ci-deploy
+cmd
+go.mod
+go.sum
+
