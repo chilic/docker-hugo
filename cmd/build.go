@@ -7,10 +7,12 @@ import (
 	"io/ioutil"
 	"log"
 	"sort"
+	"time"
 
 	"github.com/hashicorp/go-version"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/config"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
 
@@ -80,6 +82,25 @@ func getLastVersion(tags []string) string {
 	return versions[len(versions)-1].String()
 }
 
+func commitLocal(version string) {
+	r, _ := git.PlainOpen("./")
+	w, _ := r.Worktree()
+	status, _ := w.Status()
+	if status.File("Dockerfile").Worktree == git.Modified {
+		_, _ = w.Add("Dockerfile")
+
+		_, _ = w.Commit(version, &git.CommitOptions{
+			Author: &object.Signature{
+				Name:  "I Che",
+				Email: "me@iche.eu",
+				When:  time.Now(),
+			},
+		})
+
+		_ = r.Push(&git.PushOptions{})
+	}
+}
+
 func main() {
 	log.Println("Fetching tags...")
 	tags, err := fetchTags(gitURL)
@@ -105,4 +126,6 @@ func main() {
 
 	// Write new docker file.
 	ioutil.WriteFile("Dockerfile", t.Bytes(), 0644)
+
+	commitLocal(ver)
 }
