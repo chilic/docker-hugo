@@ -1,6 +1,7 @@
 .git
 .gitignore
 
+build
 ci-deploy
 cmd
 go.mod
