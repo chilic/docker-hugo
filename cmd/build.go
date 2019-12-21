@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
+	"os"
 	"sort"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/ssh"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
 
@@ -86,10 +88,11 @@ func commitLocal(version string) {
 	r, _ := git.PlainOpen("./")
 	w, _ := r.Worktree()
 	status, _ := w.Status()
+	log.Println(status)
 	if status.File("Dockerfile").Worktree == git.Modified {
 		_, _ = w.Add("Dockerfile")
 
-		_, _ = w.Commit(version, &git.CommitOptions{
+		hash, _ := w.Commit(version, &git.CommitOptions{
 			Author: &object.Signature{
 				Name:  "I Che",
 				Email: "me@iche.eu",
@@ -97,7 +100,24 @@ func commitLocal(version string) {
 			},
 		})
 
-		_ = r.Push(&git.PushOptions{})
+		log.Println("Create tag")
+		_, _ = r.CreateTag(version, hash, nil)
+
+		var publicKey *ssh.PublicKeys
+		sshPath := os.Getenv("HOME") + "/.ssh/id_rsa"
+		sshKey, _ := ioutil.ReadFile(sshPath)
+		publicKey, keyError := ssh.NewPublicKeys("git", []byte(sshKey), "") // Here should be ssh key password
+		if keyError != nil {
+			log.Panic(keyError)
+		}
+
+		log.Println("Push")
+		err := r.Push(&git.PushOptions{
+			Auth: publicKey,
+		})
+		if err != nil {
+			log.Panic(err)
+		}
 	}
 }
 
