@@ -111,9 +111,18 @@ func commitLocal(version string) {
 			log.Panic(keyError)
 		}
 
-		log.Println("Push")
+		log.Println("Push latest")
 		err := r.Push(&git.PushOptions{
 			Auth: publicKey,
+		})
+		if err != nil {
+			log.Panic(err)
+		}
+
+		log.Println("Push tags")
+		err = r.Push(&git.PushOptions{
+			Auth:     publicKey,
+			RefSpecs: []config.RefSpec{"refs/tags/*:refs/tags/*"},
 		})
 		if err != nil {
 			log.Panic(err)
