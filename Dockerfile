@@ -10,7 +10,7 @@ RUN apk add --no-cache \
 
 RUN mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
-	&& curl -L https://github.com/gohugoio/hugo/releases/download/v0.67.1/hugo_0.67.1_linux-64bit.tar.gz | tar -xz \
+	&& curl -L https://github.com/gohugoio/hugo/releases/download/v0.68.0/hugo_0.68.0_linux-64bit.tar.gz | tar -xz \
 	&& mv hugo /usr/local/bin/hugo \
 	&& addgroup -Sg 1000 hugo \
 	&& adduser -SG hugo -u 1000 -h /src hugo
